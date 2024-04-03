@@ -9,12 +9,12 @@ export default function Post(props) {
       <div className="content">
         {/\.jpg$|\.png$|\.gif$/.test(props.post['file_name']) &&
         <img
-          src={`${REACT_APP_MEDIA_SOURCE}/${props.post['file_name']}`}
+          src={`${process.env.REACT_APP_MEDIA_SOURCE}/${props.post['file_name']}`}
           alt='ups'
         />}
         {/\.mp4$|\.webm$/.test(props.post['file_name']) &&
         <video controls>
-          <source src={`${REACT_APP_MEDIA_SOURCE}/${props.post['file_name']}`}
+          <source src={`${process.env.REACT_APP_MEDIA_SOURCE}/${props.post['file_name']}`}
           alt='ups'/>
         </video>}
       </div>
