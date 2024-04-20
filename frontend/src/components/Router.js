@@ -7,7 +7,7 @@ import Logout from "./Logout";
 export default function Router(props) {
   return(
     <Routes>
-      <Route path="/" element={<Home username={props.username} setUsername={props.setUsername}/>}/>
+      <Route path="/:page?" element={<Home username={props.username} setUsername={props.setUsername}/>}/>
       <Route path="/login" element={<Login username={props.username} setUsername={props.setUsername}/>}/>
       <Route path="/rejestracja" element={<Register username={props.username} setUsername={props.setUsername}/>}/>
       <Route path="/logout" element={<Logout username={props.username} setUsername={props.setUsername}/>}/>

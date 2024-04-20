@@ -48,8 +48,10 @@ class PostController extends BaseController {
   }
 
   public function get_posts(Request $request, Response $response) : Response {
+    $username = self::Autorize();
+
     $params = $request->getQueryParams();
-    $data = $this->post->read(intval($params['post_num']), intval($params['page']));
+    $data = $this->post->read_latest(intval($params['post_num']), intval($params['page']), $username);
     $total_post_num = $this->post->row_count();
     $body = [
       "data" => $data,
@@ -57,6 +59,37 @@ class PostController extends BaseController {
     ];
     $response->getBody()->write(json_encode($body));
     return $response;
+  }
+
+  public function add_vote(Request $request, Response $response, string $id) : Response {
+    $username = self::Autorize();
+    if(!$username) throw new \Slim\Exception\HttpForbiddenException($request);
+    if(!is_numeric($id) || !$this->post->read_by_id((int)$id)) throw new \Slim\Exception\HttpBadRequestException($request);
+    if($request->getParsedBody()['vote'] != 1 && $request->getParsedBody()['vote'] != -1) throw new \Slim\Exception\HttpBadRequestException($request);
+
+    $userId = $this->user->read($username)['id'];
+
+    if($this->post->read_reaction((int) $id, $userId)) $this->post->update_reaction((int) $id, $userId, $request->getParsedBody()['vote']);
+    else {
+      $this->post->create_reaction((int) $id, $userId, $request->getParsedBody()['vote']);
+      $response = $response->withStatus(201);
+    }
+
+    $response->getBody()->write(json_encode(["ratio" => $this->post->read_ratio((int) $id), "vote" => $this->post->read_reaction((int) $id, $userId)['value']]));
+    return $response;
+  }
+
+  public function remove_vote(Request $request, Response $response, string $id) : Response {
+    $username = self::Autorize();
+    if(!$username) throw new \Slim\Exception\HttpForbiddenException($request);
+    if(!is_numeric($id) || !$this->post->read_by_id((int)$id)) throw new \Slim\Exception\HttpBadRequestException($request);
+
+      $userId = $this->user->read($username)['id'];
+
+      $this->post->delete_reaction((int) $id, $userId);
+
+      $response->getBody()->write(json_encode(["ratio" => $this->post->read_ratio((int) $id), "vote" => 0]));
+      return $response;
   }
 
   private function moveUploadedFile(string $username, UploadedFileInterface $uploadedFile) {

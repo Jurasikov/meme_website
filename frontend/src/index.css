@@ -74,6 +74,17 @@ article {
   z-index: 1;
 }
 
+.voteBar {
+  display: flex;
+  justify-content: flex-end;
+  font-weight: bold;
+}
+
+.upVote, .downVote {
+  font-weight: bolder;
+  margin-inline: 10px;
+}
+
 video {
   width: inherit;
 }

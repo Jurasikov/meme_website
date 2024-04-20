@@ -60,6 +60,8 @@ $app->post('/api/logout', [UserController::class, 'logout']);
 
 $app->get('/api/posts', [PostController::class, 'get_posts']);
 $app->post('/api/posts', [PostController::class, 'add_post']);
+$app->put('/api/posts/{id}/reactions', [PostController::class, 'add_vote']);
+$app->delete('/api/posts/{id}/reactions', [PostController::class, 'remove_vote']);
 
 $app->map(['GET', 'POST', 'PUT', 'DELETE', 'PATCH'], '/{routes:.+}', function ($request, $response) {
     throw new HttpNotFoundException($request);
