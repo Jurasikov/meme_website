@@ -26,6 +26,18 @@ code {
   z-index: 10;
 }
 
+.bottomBar {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.bottomBar > a {
+  text-decoration: none;
+  color:darkorchid
+}
+
 .main {
   display: flex;
   justify-content: center;
@@ -91,4 +103,25 @@ video {
 
 img {
   width: inherit;
+}
+
+.commentSection {
+  background-color: rgb(37, 37, 37);
+  padding: 10px;
+}
+
+.mainComment, .subcomment {
+  background-color: rgb(73, 73, 73);
+}
+
+.subcomment {
+  margin-left: 1.5em;
+}
+
+.commentBar {
+  background-color: rgb(21, 21, 21);
+}
+
+.commentContent {
+  margin: 0;
 }

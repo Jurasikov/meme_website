@@ -5,7 +5,6 @@ use DI\Bridge\Slim\Bridge;
 use Middlewares\TrailingSlash;
 use Slim\Exception\HttpNotFoundException;
 
-use App\Controllers\TestController;
 use App\Controllers\UserController;
 use App\Controllers\PostController;
 
@@ -39,7 +38,7 @@ $errorHandler->forceContentType('application/json');
 $app->add(function ($request, $handler) {
     $response = $handler->handle($request);
     return $response
-            ->withHeader('Access-Control-Allow-Origin', 'http://localhost:3000')
+            ->withHeader('Access-Control-Allow-Origin', 'http://localhost:8001')
             ->withHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Accept, Origin, Authorization')
             ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS')
             ->withHeader('Access-Control-Allow-Credentials', 'true');
@@ -60,8 +59,11 @@ $app->post('/api/logout', [UserController::class, 'logout']);
 
 $app->get('/api/posts', [PostController::class, 'get_posts']);
 $app->post('/api/posts', [PostController::class, 'add_post']);
+$app->get('/api/posts/{id}', [PostController::class, 'get_post']);
 $app->put('/api/posts/{id}/reactions', [PostController::class, 'add_vote']);
 $app->delete('/api/posts/{id}/reactions', [PostController::class, 'remove_vote']);
+$app->post('/api/posts/{id}/comments', [\App\Controllers\CommentController::class, 'add_comment']);
+$app->get('/api/posts/{id}/comments', [\App\Controllers\CommentController::class, 'get_comments']);
 
 $app->map(['GET', 'POST', 'PUT', 'DELETE', 'PATCH'], '/{routes:.+}', function ($request, $response) {
     throw new HttpNotFoundException($request);

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import Post from "./Post";
+import PostComponent from "./PostComponent";
 import { useNavigate } from "react-router-dom";
 
 export default function PostList(props) {
@@ -41,7 +41,7 @@ export default function PostList(props) {
 
   return (
     <div>
-      {posts ? posts.map((post, i) => <Post {...posts[i]} key={i} username={props.username}/>) : (<div>pusto</div>)}
+      {posts ? posts.map((post, i) => <PostComponent {...posts[i]} key={i} username={props.username}/>) : (<div>pusto</div>)}
       <div>
         {props.page > 0 && <button onClick={previousPage}>Poprzednia</button>}
         <select value={props.page+1} onChange={selectPage}>

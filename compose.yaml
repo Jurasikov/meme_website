@@ -1,0 +1,34 @@
+services:
+  backend:
+    build:
+      context: ./backend
+    volumes:
+      - /var/www/html/vendor
+      - ./backend/:/var/www/html
+    ports:
+      - 8000:80
+  db:
+    image: mysql
+    volumes:
+      - ./database:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - 3306:3306
+  phpmyadmin:
+    image: phpmyadmin
+    ports:
+      - 8080:80
+    environment:
+      - PMA_ARBITRARY=1
+  frontend:
+    # image: "node:18"
+    build:
+      context: ./frontend
+    working_dir: /home/node/app
+    volumes:
+      - /home/node/app/node_modules
+      - ./frontend/:/home/node/app
+    ports:
+      - "8001:3000"
+    command: "npm start"

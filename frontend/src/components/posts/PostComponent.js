@@ -1,7 +1,8 @@
 import { useEffect } from "react";
 import VoteBar from "./VoteBar";
+import { NavLink } from "react-router-dom";
 
-export default function Post(props) {
+export default function PostComponent(props) {
 
   return (
     <article>
@@ -20,7 +21,10 @@ export default function Post(props) {
           <source src={`${process.env.REACT_APP_MEDIA_SOURCE}/${props.file_name}`}
           alt='ups'/>
         </video>}
-        <VoteBar ratio={props.ratio} vote={props.vote ? props.vote : null} id={props.id} username={props.username}/>
+        <div className="bottomBar">
+          <NavLink to={`/post/${props.id}`}>Komentarze</NavLink>
+          <VoteBar ratio={props.ratio} vote={props.vote ? props.vote : null} id={props.id} username={props.username}/>
+        </div>
       </div>
       
     </article>

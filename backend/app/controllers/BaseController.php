@@ -6,12 +6,12 @@ use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 
 class BaseController {
-  public static function Autorize() : String | null {
+  public static function Autorize() : int | null {
     if(isset($_COOKIE['user_token'])){
       $token = $_COOKIE['user_token'];
       try{
         $decoded = (array) JWT::decode($token, new Key($_ENV['JWT_KEY'], $_ENV['JWT_ALG']));
-        return $decoded['username'];
+        return $decoded['userId'];
       } catch(\Exception $e) {
         return null;
       }

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Controllers;
 
 use Psr\Http\Message\ServerRequestInterface as Request;
-use \Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ResponseInterface as Response;
 use \App\Models\User;
 use Firebase\JWT\JWT;
 
@@ -16,10 +16,10 @@ class UserController extends BaseController {
     $this->user = $model;
   }
 
-  public function generate_token(string $username, $expirationDate) {
+  public function generate_token(int $userId, $expirationDate) {
     $payload = [
       'iss' => $_SERVER['SERVER_NAME'],
-      'username' => $username,
+      'userId' => $userId,
       'iat' => time(),
       'exp' => $expirationDate
     ];
@@ -54,11 +54,10 @@ class UserController extends BaseController {
 
     $user = $this->user->read($username);
     if(!$user) {
-      $message = $this->user->create($username, $password, false);
-      $response->getBody()->write(json_encode(['message' => $message]));
+      $userId = $this->user->create($username, $password, false);
       
       $expirationDate = time() + 60*60*24;
-      $token = $this->generate_token($username, $expirationDate);
+      $token = $this->generate_token($userId, $expirationDate);
       setcookie("user_token", $token, $expirationDate, '/', httponly: true);
 
       $userData = json_encode([
@@ -71,7 +70,7 @@ class UserController extends BaseController {
       $response->getBody()->write(json_encode(['message' => $message]));
       return $response->withHeader('Content-type', 'application/json')->withStatus(409);
     }
-    return $response->withHeader('Content-type', 'application/json')->withStatus(201);
+    return $response->withStatus(201);
   }
 
   public function login(Request $request, Response $response) : Response {
@@ -101,25 +100,24 @@ class UserController extends BaseController {
 
     $user = $this->user->read($username);
     $expirationDate = time() + 60*60*24;
-    if($user) {
-      if(password_verify($password, $user['passwd'])) {
-        $token = $this->generate_token($username, $expirationDate);
-        setcookie("user_token", $token, $expirationDate, '/', httponly: true);
-        
-        $userData = json_encode([
-          'username' => $username
-        ]);
-        setcookie("user_data", $userData, $expirationDate, '/');
-
-        $body = json_encode([
-          'message' => 'zalogowano',
-          'username' => $username
-        ]);
-        $response->getBody()->write($body);
-        return $response->withHeader('Content-type', 'application/json');
-      }
+    if(!$user || !password_verify($password, $user['passwd'])) {
+      $response->getBody()->write(json_encode(['message' => 'błędne dane logowania']));
+      return $response->withHeader('Content-type', 'application/json');
     }
-    $response->getBody()->write(json_encode(['message' => 'błędne dane logowania']));
+    
+    $token = $this->generate_token($user['id'], $expirationDate);
+    setcookie("user_token", $token, $expirationDate, '/', httponly: true);
+    
+    $userData = json_encode([
+      'username' => $username
+    ]);
+    setcookie("user_data", $userData, $expirationDate, '/');
+
+    $body = json_encode([
+      'message' => 'zalogowano',
+      'username' => $username
+    ]);
+    $response->getBody()->write($body);
     return $response->withHeader('Content-type', 'application/json');
   }
 

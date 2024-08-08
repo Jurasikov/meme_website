@@ -1,8 +1,12 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function VoteBar(props) {
   const [vote, setVote] = useState(props.vote);
   const [ratio, setRatio] = useState(props.ratio);
+
+  useEffect(() => {
+    console.log(props);
+  })
   
   function fvote(event) {
     if(!props.username) {
@@ -45,10 +49,10 @@ export default function VoteBar(props) {
   }
 
   return (
-    <div className="voteBar">
+    <span className="voteBar">
       <span className="upVote" onClick={fvote} style={{color: vote===1 ? "green" : "inherit", cursor: "pointer"}}>+</span>
       <span className="ratio">{ratio}</span>
       <span className="downVote" onClick={fvote} style={{color: vote===-1 ? "red" : "inherit", cursor: "pointer"}}>-</span>
-    </div>
+    </span>
   )
 }
