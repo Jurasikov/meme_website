@@ -125,3 +125,12 @@ img {
 .commentContent {
   margin: 0;
 }
+
+.tags {
+  display: flex;
+  flex-direction: row;
+}
+
+.tags > * {
+  padding-right: 10px;
+}

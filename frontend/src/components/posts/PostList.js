@@ -37,11 +37,11 @@ export default function PostList(props) {
       setPageNum(Math.ceil(data['total_post_number']/props.post_num))
     })
     .catch(err => console.log(err))
-  }, [props.page])
+  }, [props.page, props.post_num])
 
   return (
     <div>
-      {posts ? posts.map((post, i) => <PostComponent {...posts[i]} key={i} username={props.username}/>) : (<div>pusto</div>)}
+      {posts ? posts.map((post, i) => <PostComponent {...post} key={i} username={props.username}/>) : (<div>pusto</div>)}
       <div>
         {props.page > 0 && <button onClick={previousPage}>Poprzednia</button>}
         <select value={props.page+1} onChange={selectPage}>

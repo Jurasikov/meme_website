@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import PostComponent from "../components/posts/PostComponent"
-import Comments from "../components/comments/Comments";
+import CommentSection from "../components/comments/CommentSection";
 import { useParams } from "react-router-dom";
 
 export default function Post(props) {
@@ -28,7 +28,7 @@ export default function Post(props) {
   return (
     <div>
       <PostComponent {...post} username={props.username}/>
-      <Comments id={params.number} />
+      <CommentSection id={params.number} />
     </div>
   )
 }

@@ -1,15 +1,16 @@
 import { useEffect } from "react";
 import VoteBar from "./VoteBar";
 import { NavLink } from "react-router-dom";
+import Tags from "./Tags";
 
 export default function PostComponent(props) {
-
   return (
     <article>
       <div className="titleBar">
         <p className="author">{props.author}</p>
         <h3 className="title">{props.title}</h3>
       </div>
+      <Tags tags={props.tags}/>
       <div className="content">
         {/\.jpg$|\.png$|\.gif$/.test(props.file_name) &&
         <img

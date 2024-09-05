@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react";
 import Comment from "./Comment";
+import AddComment from "./AddComment";
 
-export default function Comments(props) {
+export default function CommentSection(props) {
   const [comments, setComments] = useState();
+  const [refresh, setRefresh] = useState();
 
   useEffect(() => {
+    setRefresh(false);
     const options = {
       method: 'GET',
       credentials: 'include'
@@ -32,14 +35,17 @@ export default function Comments(props) {
         }
       }
       setComments(mainComments);
-      console.log(anchors);
+      //console.log(anchors);
     })
     .catch(err => console.log(err));
-  }, []);
+  }, [refresh]);
 
   return (
     <div className="commentSection">
-      {comments ? comments.map((comment, i) => <Comment {...comments[i]} key={i} commentType="mainComment"/>) : "pusto"}
+      <div className="comments">
+        {comments ? comments.map((comment, i) => <Comment {...comments[i]} key={i} commentType="mainComment" postId={props.id} setRefresh={setRefresh}/>) : "pusto"}
+      </div>
+      <AddComment postId={props.id} reply={null} setRefresh={setRefresh}/>
     </div>
   )
 }

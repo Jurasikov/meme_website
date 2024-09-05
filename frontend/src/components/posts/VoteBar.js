@@ -4,9 +4,9 @@ export default function VoteBar(props) {
   const [vote, setVote] = useState(props.vote);
   const [ratio, setRatio] = useState(props.ratio);
 
-  useEffect(() => {
-    console.log(props);
-  })
+  // useEffect(() => {
+  //   console.log(props);
+  // })
   
   function fvote(event) {
     if(!props.username) {
