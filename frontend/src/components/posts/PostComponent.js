@@ -7,7 +7,7 @@ export default function PostComponent(props) {
   return (
     <article>
       <div className="titleBar">
-        <p className="author">{props.author}</p>
+        <NavLink to={`/user/${props.author}`} className="author">{props.author}</NavLink>
         <h3 className="title">{props.title}</h3>
       </div>
       <Tags tags={props.tags}/>

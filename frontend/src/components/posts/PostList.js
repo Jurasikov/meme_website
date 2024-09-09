@@ -3,20 +3,20 @@ import PostComponent from "./PostComponent";
 import { useNavigate } from "react-router-dom";
 
 export default function PostList(props) {
-  const navigate = useNavigate()
-  const [posts, setPosts] = useState(null)
-  const [pageNum, setPageNum] = useState(0)
+  const navigate = useNavigate();
+  const [posts, setPosts] = useState(null);
+  const [pageNum, setPageNum] = useState(0);
 
   function selectPage(event) {
-    navigate(`/${event.target.value}`)
+    navigate(`/${props.filter ? props.filter + '/' + props.filterKey + '/' : ""}${event.target.value}`);
   }
 
   function nextPage() {
-    navigate(`/${props.page+1+1}`)
+    navigate(`/${props.filter ? props.filter + '/' + props.filterKey + '/' : ""}${props.page+1+1}`);
   }
 
   function previousPage() {
-    navigate(`/${props.page-1+1}`)
+    navigate(`/${props.filter ? props.filter + '/' + props.filterKey + '/' : ""}${props.page-1+1}`);
   }
 
   useEffect(() => {
@@ -25,7 +25,11 @@ export default function PostList(props) {
       credentials: 'include',
       cache: 'no-store'
     }
-    fetch(`${process.env.REACT_APP_API}/posts?page=${props.page}&post_num=${props.post_num}`, options)
+    let resource;
+    if(props.filter === "user") resource = `${process.env.REACT_APP_API}/posts?page=${props.page}&post_num=${props.post_num}&user=${props.filterKey}`;
+    else if(props.filter === "tag") resource = `${process.env.REACT_APP_API}/posts?page=${props.page}&post_num=${props.post_num}&tag=${props.filterKey}`;
+    else resource = `${process.env.REACT_APP_API}/posts?page=${props.page}&post_num=${props.post_num}`;
+    fetch(encodeURI(resource), options)
     .then((response) => {
       if(!response.ok) {
         throw new Error(`${response.status} ${response.statusText}`)
@@ -37,7 +41,7 @@ export default function PostList(props) {
       setPageNum(Math.ceil(data['total_post_number']/props.post_num))
     })
     .catch(err => console.log(err))
-  }, [props.page, props.post_num])
+  }, [props.page, props.post_num, props.filter, props.filterKey])
 
   return (
     <div>

@@ -18,7 +18,7 @@ export default function Home(props) {
   return (
     <div className="home">
       {props.username && <AddPost/>}
-      {page && <PostList page={page-1} post_num={3} username={props.username}/>}
+      {page && <PostList page={page-1} post_num={3} username={props.username} filter={null} filterKey={null}/>}
     </div>
   )
 }

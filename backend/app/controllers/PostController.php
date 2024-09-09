@@ -77,8 +77,11 @@ class PostController extends BaseController {
     $userId = self::Autorize();
 
     $params = $request->getQueryParams();
-    $data = $this->post->read_latest(intval($params['post_num'] ?? 8), intval($params['page'] ?? 0), $userId);
-    $total_post_num = $this->post->row_count();
+    if(($params['user'] ?? false) && ($params['tag'] ?? false)) throw new \Slim\Exception\HttpBadRequestException($request);
+
+
+    $data = $this->post->read_latest(intval($params['post_num'] ?? 8), intval($params['page'] ?? 0), $userId, $params['user'] ?? null, $params['tag'] ?? null);
+    $total_post_num = $this->post->row_count($params['user'] ?? null, $params['tag'] ?? null);
     $body = [
       "data" => $data,
       "total_post_number" => $total_post_num

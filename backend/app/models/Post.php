@@ -41,12 +41,29 @@ class Post extends BaseModel {
     return $result;
   }
 
-  public function read_latest(int $num, int $page, int | null $userId = null) {
-    $sql = "SELECT p.id, u.name AS author, p.title, p.file_name, p.post_date, COALESCE(SUM(r.value), 0) AS ratio
+  public function read_latest(int $num, int $page, int | null $userId = null, string | null $filterUsername = null, string | null $filterTag = null) {
+    if($filterUsername) {
+      $sql = "SELECT p.id, u.name AS author, p.title, p.file_name, p.post_date, COALESCE(SUM(r.value), 0) AS ratio
+        FROM posts p LEFT JOIN reactions r ON p.id = r.post LEFT JOIN users u ON p.author = u.id
+        WHERE u.name = :filterUser
+        GROUP BY p.id ORDER BY p.post_date DESC LIMIT :start, :num";
+      $params = [":start" => $page*$num, ":num" => $num, ":filterUser" => $filterUsername];
+    }
+    elseif($filterTag) {
+      $sql = "SELECT p.id, u.name AS author, p.title, p.file_name, p.post_date, COALESCE(SUM(r.value), 0) AS ratio
+        FROM posts p LEFT JOIN reactions r ON p.id = r.post LEFT JOIN users u ON p.author = u.id
+        WHERE p.id IN (SELECT pt.post FROM post_tag pt JOIN tags t ON pt.tag = t.id WHERE t.name = :filterTag)
+        GROUP BY p.id ORDER BY p.post_date DESC LIMIT :start, :num";
+      $params = [":start" => $page*$num, ":num" => $num, ":filterTag" => $filterTag];
+    }
+    else {
+      $sql = "SELECT p.id, u.name AS author, p.title, p.file_name, p.post_date, COALESCE(SUM(r.value), 0) AS ratio
             FROM posts p LEFT JOIN reactions r ON p.id = r.post LEFT JOIN users u ON p.author = u.id
             GROUP BY p.id ORDER BY p.post_date DESC LIMIT :start, :num";
+      $params = [":start" => $page*$num, ":num" => $num];
+    }
     $stmt = $this->db->prepare($sql);
-    $stmt->execute([":start" => $page*$num, ":num" => $num]);
+    $stmt->execute($params);
     $result = [];
 
     if($userId) {
@@ -75,10 +92,25 @@ class Post extends BaseModel {
     return $result;
   }
 
-  public function row_count() {
-    $sql = "SELECT COUNT(id) FROM posts";
+  public function row_count(string | null $filterUsername = null, string | null $filterTag = null) {
+    if($filterUsername) {
+      $sql = "SELECT COUNT(p.id)
+        FROM posts p LEFT JOIN reactions r ON p.id = r.post LEFT JOIN users u ON p.author = u.id
+        WHERE u.name = :filterUser";
+      $params = [":filterUser" => $filterUsername];
+    }
+    elseif($filterTag) {
+      $sql = "SELECT COUNT(p.id)
+        FROM posts p LEFT JOIN reactions r ON p.id = r.post LEFT JOIN users u ON p.author = u.id
+        WHERE p.id IN (SELECT pt.post FROM post_tag pt JOIN tags t ON pt.tag = t.id WHERE t.name = :filterTag)";
+      $params = [":filterTag" => $filterTag];
+    }
+    else {
+      $sql = "SELECT COUNT(id) FROM posts";
+      $params = [];
+    }
     $stmt = $this->db->prepare($sql);
-    $stmt->execute();
+    $stmt->execute($params);
     $rows = $stmt->fetchColumn();
     return $rows;
   }
